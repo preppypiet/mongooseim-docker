@@ -15,23 +15,18 @@ RUN apt-get update && apt-get install -y   wget \
                                            libncurses5-dev \
                                            libssl-dev \
                                            libexpat1-dev \
-                                           libpam0g-dev
+                                           libpam0g-dev \
+										   libwxbase2.8-0 \
+										   libwxgtk2.8-0
+
+RUN wget http://packages.erlang-solutions.com/site/esl/esl-erlang/FLAVOUR_3_general/esl-erlang_17.4-1~ubuntu~utopic_amd64.deb && dpkg -i esl-erlang_17.4-1~ubuntu~utopic_amd64.deb
 
 # add esl packages
-RUN wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb \
-    && dpkg -i erlang-solutions_1.0_all.deb \
-    && wget http://packages.erlang-solutions.com/debian/erlang_solutions.asc\
-    && apt-key add erlang_solutions.asc \
-    && apt-get update \
-    && apt-get install -y erlang-base \
-                          erlang-dev \
-                          erlang-nox \
-                          erlang-dialyzer \
-                          erlang-reltool
 
 # install mim from source
 RUN git clone https://github.com/esl/MongooseIM.git -b $MONGOOSEIM_VERSION /opt/mongooseim \
     && cd /opt/mongooseim \
+	&& make configure with-mysql \
     && make rel \
     && rm -rf /opt/mongooseim/rel/mongooseim/log \
     && ln -s /data/log /opt/mongooseim/rel/mongooseim/log
